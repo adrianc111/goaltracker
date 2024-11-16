@@ -1,0 +1,53 @@
+# fly.toml app configuration file generated for oneway on 2024-08-07T13:59:27+01:00
+#
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+#
+
+app = 'oneway'
+primary_region = 'lhr'
+console_command = 'php /var/www/html/artisan tinker'
+
+[build]
+  [build.args]
+    NODE_VERSION = '20'
+    PHP_VERSION = '8.3'
+
+[deploy]
+  release_command = 'bash /var/www/html/scripts/release.sh'
+
+[env]
+  APP_ENV = 'production'
+  APP_NAME = 'Oneway'
+  APP_TIMEZONE = 'Europe/London'
+  APP_URL = 'https://goaltracker.co'
+  VITE_APP_NAME = 'Oneway'
+  DB_CONNECTION = "mysql"
+  DB_HOST = "oneway-db.internal"
+  DB_DATABASE= "oneway-db"
+  LOG_CHANNEL = 'stderr'
+  LOG_LEVEL = 'info'
+  LOG_STDERR_FORMATTER = 'Monolog\Formatter\JsonFormatter'
+  SESSION_DRIVER = 'cookie'
+  SESSION_SECURE_COOKIE = 'true'
+  MAIL_FROM_ADDRESS = 'noreply@goaltracker.co'
+  MAIL_FROM_NAME = 'Goal Tracker'
+  MAIL_MAILER = 'mailersend'
+
+[http_service]
+  internal_port = 8080
+  force_https = true
+  auto_stop_machines = false
+  auto_start_machines = true
+  min_machines_running = 1
+  processes = ['app']
+
+[[vm]]
+  memory = '512mb'
+  cpu_kind = 'shared'
+  cpus = 1
+
+[processes]
+  app = ""
+#  cron = "cron -f"
+#  worker = 'php /var/www/html/artisan queue:work'
+#  scheduler = 'php /var/www/html/artisan schedule:work'
