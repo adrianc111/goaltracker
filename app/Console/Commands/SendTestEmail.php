@@ -27,6 +27,6 @@ class SendTestEmail extends Command
      */
     public function handle()
     {
-        Mail::to('adrian.cebanica@protonmail.com')->send(new ExampleEmail());
+        Mail::to(env('MAIL_ADMIN_ADDRESS'))->send(new ExampleEmail());
     }
 }
