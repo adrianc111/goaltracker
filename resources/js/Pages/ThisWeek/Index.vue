@@ -17,11 +17,20 @@
                     </Link>
                 </div>
 
-                <div class="text-right mb-2">
-                    <button class="underline" type="button" @click="toggleAllContent">Toggle all</button>
+<!--                <button v-if="layout==='week'" class="underline" type="button" @click="toggleAllContent">Toggle all</button>-->
+
+                <div class="flex justify-end mb-2">
+                    <ToggleGroup v-model="layout" type="single" variant="outline">
+                        <ToggleGroupItem value="week" aria-label="Week">
+                            <BetweenVerticalStart class="h-4 w-4" />
+                        </ToggleGroupItem>
+                        <ToggleGroupItem value="month" aria-label="Month">
+                            <CalendarDays class="h-4 w-4" />
+                        </ToggleGroupItem>
+                    </ToggleGroup>
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div v-if="layout==='week'" class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <!-- Left Column -->
                     <div class="space-y-6">
                         <Card
@@ -190,6 +199,20 @@
                         </Card>
                     </div>
                 </div>
+
+                <div v-else-if="layout==='month'">
+                    <div class='flex min-h-fit text-sm'>
+                        <div class='flex-grow p-3'>
+                            <FullCalendar :options='calendarOptions'
+                            >
+<!--                                <template v-slot:eventContent='arg'>-->
+<!--                                    <b>{{ arg.timeText }}</b>-->
+<!--                                    <i>{{ arg.event.title }}</i>-->
+<!--                                </template>-->
+                            </FullCalendar>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </AuthenticatedLayout>
@@ -215,11 +238,16 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/shadcn/ui/dropdown-menu/index.js";
+import { ToggleGroup, ToggleGroupItem } from "@/shadcn/ui/toggle-group/index.js";
+import dayGridPlugin from "@fullcalendar/daygrid";
+import interactionPlugin from "@fullcalendar/interaction";
+import timeGridPlugin from "@fullcalendar/timegrid";
+import FullCalendar from "@fullcalendar/vue3";
 import { Head, Link } from "@inertiajs/vue3";
 import { QuillEditor } from "@vueup/vue-quill";
 import { addWeeks, endOfWeek, format, getWeek, isSameDay, startOfWeek, subWeeks } from "date-fns";
 import debounce from "lodash.debounce";
-import { ChevronDown, ChevronLeft, ChevronRight } from "lucide-vue-next";
+import { BetweenVerticalStart, CalendarDays, ChevronDown, ChevronLeft, ChevronRight } from "lucide-vue-next";
 import { useToast } from "vue-toastification";
 
 export default {
@@ -251,6 +279,11 @@ export default {
     DropdownMenuSubContent,
     DropdownMenuSeparator,
     DropdownMenuGroup,
+    ToggleGroup,
+    ToggleGroupItem,
+    BetweenVerticalStart,
+    CalendarDays,
+    FullCalendar,
   },
   props: {
     tasksByDay: Object,
@@ -265,6 +298,15 @@ export default {
   data() {
     const selectedWeekStart = startOfWeek(new Date(this.selectedWeekStartDate), { weekStartsOn: 1 });
     const selectedWeekId = getWeek(selectedWeekStart, { weekStartsOn: 1, firstWeekContainsDate: 4 });
+    // Transform tasksByDay into calendar events
+    const initialEvents = Object.values(this.tasksByDay).flatMap((day) =>
+      day.tasks.map((task) => ({
+        id: task.id,
+        title: task.title,
+        start: day.date,
+        allDay: true, // Customize this based on your task's time details
+      })),
+    );
 
     return {
       toast: useToast(),
@@ -272,6 +314,35 @@ export default {
       selectedWeekId, // Added
       visibleCards: {},
       allVisible: true, // Flag to track if all cards are opened or closed
+      layout: "week",
+      calendarOptions: {
+        plugins: [
+          dayGridPlugin,
+          timeGridPlugin,
+          interactionPlugin, // needed for dateClick
+        ],
+        headerToolbar: {
+          left: "prev,next today",
+          right: "dayGridMonth,timeGridWeek,timeGridDay",
+        },
+        initialView: "timeGridWeek",
+        initialEvents: initialEvents,
+        firstDay: 1,
+        editable: true,
+        selectable: true,
+        selectMirror: true,
+        dayMaxEvents: true,
+        weekends: true,
+        select: this.handleDateSelect,
+        eventClick: this.handleEventClick,
+        eventsSet: this.handleEvents,
+        /* you can update a remote database when these fire:
+            eventAdd:
+            eventChange:
+            eventRemove:
+            */
+      },
+      currentEvents: [],
     };
   },
   computed: {
@@ -470,10 +541,40 @@ export default {
       const weekKey = `${this.selectedWeekId}-${key}`;
       return this.visibleCards[weekKey] !== false;
     },
+
+    handleWeekendsToggle() {
+      this.calendarOptions.weekends = !this.calendarOptions.weekends; // update a property
+    },
+    handleDateSelect(selectInfo) {
+      const title = prompt("Please enter a new title for your event");
+      const calendarApi = selectInfo.view.calendar;
+
+      calendarApi.unselect(); // clear date selection
+
+      if (title) {
+        calendarApi.addEvent({
+          id: 3,
+          title,
+          start: selectInfo.startStr,
+          end: selectInfo.endStr,
+          allDay: selectInfo.allDay,
+        });
+      }
+    },
+    handleEventClick(clickInfo) {
+      if (confirm(`Are you sure you want to delete the event '${clickInfo.event.title}'`)) {
+        clickInfo.event.remove();
+      }
+    },
+    handleEvents(events) {
+      this.currentEvents = events;
+    },
   },
 };
 </script>
 
-<style scoped>
-/* Add any additional styles if needed */
+<style>
+.data-\[state\=on\]\:text-accent-foreground[data-state="on"] {
+    background-color: white;
+}
 </style>
