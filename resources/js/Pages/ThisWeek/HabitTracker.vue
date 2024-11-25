@@ -34,7 +34,7 @@
                         <!-- Status for each day of the week -->
                         <TableCell v-for="(day, index) in habit.days" :key="index"
                                    :class="{'bg-gray-100 dark:bg-gray-800': day.isToday }"
-                                   class="text-center"
+                                   class="text-center p-0"
                         >
                             <input
                                 :checked="day.status"
