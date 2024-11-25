@@ -29,7 +29,7 @@
                 <template v-for="(habits, groupName) in groupedHabits" :key="groupName" class="mb-6">
                     <h2 class="text-sm uppercase font-semibold mt-4">{{ groupName }}</h2>
                     <TableRow v-for="habit in habits" :key="habit.id">
-                        <TableCell class="font-medium min-w-[120px]" :class="{'line-through': habit.archived}">{{ habit.name }}</TableCell>
+                        <TableCell class="font-medium p-0 min-w-[200px]" :class="{'line-through': habit.archived}">{{ habit.name }}</TableCell>
 
                         <!-- Status for each day of the week -->
                         <TableCell v-for="(day, index) in habit.days" :key="index"
