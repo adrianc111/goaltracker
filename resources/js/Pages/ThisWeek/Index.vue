@@ -7,13 +7,13 @@
                 <!-- Date Navigation -->
                 <div class="flex items-center justify-center space-x-4">
                     <Link :href="formatWeekUrl(subWeeks(selectedWeekStart, 1))" class="text-gray-500 hover:text-gray-700">
-                        <ChevronUp/>
+                        <ChevronLeft/>
                     </Link>
                     <span class="text-lg font-semibold">
                         {{ formattedDateRange }}
                     </span>
                     <Link :href="formatWeekUrl(addWeeks(selectedWeekStart, 1))" class="text-gray-500 hover:text-gray-700">
-                        <ChevronDown/>
+                        <ChevronRight/>
                     </Link>
                 </div>
 
@@ -50,7 +50,7 @@
                                         {{ day.title }}
                                         <Badge class="text-xs" variant="secondary">{{ incompleteTasksByDay[key] || 0 }}</Badge>
                                     </span>
-                                    <ChevronDown v-if="isVisible(key)"/>
+                                    <ChevronRight v-if="isVisible(key)"/>
                                     <ChevronDown v-if="!isVisible(key)"/>
                                 </CardTitle>
                                 <CardDescription>{{ day.date }}</CardDescription>
@@ -100,7 +100,7 @@
                                         This Week
                                         <Badge class="text-xs" variant="secondary">{{ incompleteTasksThisWeek || 0 }}</Badge>
                                     </span>
-                                    <ChevronDown v-if="isVisible('thisWeek')"/>
+                                    <ChevronRight v-if="isVisible('thisWeek')"/>
                                     <ChevronDown v-if="!isVisible('thisWeek')"/>
                                 </CardTitle>
                             </CardHeader>
@@ -146,7 +146,7 @@
                             <CardHeader class="cursor-pointer" @click="toggleContent('habitTracker')">
                                 <CardTitle class="flex justify-between">
                                     <span>Habit tracker</span>
-                                    <ChevronDown v-if="isVisible('habitTracker')"/>
+                                    <ChevronRight v-if="isVisible('habitTracker')"/>
                                     <ChevronDown v-if="!isVisible('habitTracker')"/>
                                 </CardTitle>
                             </CardHeader>
@@ -162,7 +162,7 @@
                                         Shopping List
                                         <Badge class="text-xs" variant="secondary">{{ incompleteShoppingListItems || 0 }}</Badge>
                                     </span>
-                                    <ChevronDown v-if="isVisible('shoppingList')"/>
+                                    <ChevronRight v-if="isVisible('shoppingList')"/>
                                     <ChevronDown v-if="!isVisible('shoppingList')"/>
                                 </CardTitle>
                             </CardHeader>
@@ -183,7 +183,7 @@
                             <CardHeader class="cursor-pointer" @click="toggleContent('notes')">
                                 <CardTitle class="flex justify-between">
                                     <span>Notes</span>
-                                    <ChevronDown v-if="isVisible('notes')"/>
+                                    <ChevronRight v-if="isVisible('notes')"/>
                                     <ChevronDown v-if="!isVisible('notes')"/>
                                 </CardTitle>
                             </CardHeader>
@@ -247,7 +247,7 @@ import { Head, Link } from "@inertiajs/vue3";
 import { QuillEditor } from "@vueup/vue-quill";
 import { addWeeks, endOfWeek, format, getWeek, isSameDay, startOfWeek, subWeeks } from "date-fns";
 import debounce from "lodash.debounce";
-import { BetweenVerticalStart, CalendarDays, ChevronDown, ChevronUp, ChevronDown } from "lucide-vue-next";
+import { BetweenVerticalStart, CalendarDays, ChevronDown, ChevronLeft, ChevronRight } from "lucide-vue-next";
 import { useToast } from "vue-toastification";
 
 export default {
@@ -264,8 +264,8 @@ export default {
     CardTitle,
     HabitTracker,
     Head,
-    ChevronUp,
-    ChevronDown,
+    ChevronLeft,
+    ChevronRight,
     ChevronDown,
     Link,
     DropdownMenuItem,
