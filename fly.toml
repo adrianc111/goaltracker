@@ -37,7 +37,7 @@ console_command = 'php /var/www/html/artisan tinker'
   internal_port = 8080
   force_https = true
   auto_stop_machines = true  # Enable auto-stop
-  auto_start_machines = true # Ensure auto-start is enabled
+  auto_start_machines = false # Ensure auto-start is enabled
   min_machines_running = 0   # Allow all machines to stop
   processes = ['app']
 
